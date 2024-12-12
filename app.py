@@ -24,7 +24,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 
 st.markdown("### Welcome to the LinkedIn Predictor")
-st.markdown("#### Answer the questions below and find out how likely you're a LinkedIn user")
+st.markdown("##### Answer the questions below and find out how likely you're a LinkedIn user. See your probability in the sidebar.")
 
 
 s = pd.read_csv('social_media_usage.csv')
@@ -281,7 +281,7 @@ elif education_input == 'Some postgraduate':
 elif education_input == 'Postgraduate degree':
     education_value = 8
 else:
-    income_value = np.nan
+    education_value = np.nan
 
 """***"""
 
@@ -320,6 +320,23 @@ age_value = st.slider(label="Enter your age",
           max_value=100,
           value=0)
 
+user_input = [income_value, education_value, parent_value, married_value, gender_value, age_value]
+
+user_data = pd.DataFrame({
+    'income': [income_value],
+    'education': [education_value],
+    'parent':[parent_value],
+    'married': [married_value],
+    'female': [gender_value],
+    'age': [age_value]
+})
+
+if lr.predict(user_data)[0] == 1:
+    user_prediction = 'probably'
+else:
+    user_prediction = 'probably not'
+
 
 with st.sidebar:
-    st.write(f"This person is bracket")
+    st.write(f"You are {user_prediction} a LinkedIn user.")
+    st.write(f"Your probability of being a LinkedIn user is {round(lr.predict_proba([user_input])[0][1]*100,1)}%.")
