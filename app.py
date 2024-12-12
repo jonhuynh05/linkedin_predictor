@@ -23,16 +23,18 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 
-st.markdown("### Streamlit is an analytics web development package for Python")
+st.markdown("### Welcome to the LinkedIn Predictor")
+st.markdown("#### Answer the questions below and find out how likely you're a LinkedIn user")
+
 
 s = pd.read_csv('social_media_usage.csv')
 
-s.shape
+# s.shape
 
-"""***
+# """***
 
-#### Q2 Define a function called clean_sm that takes one input, x, and uses `np.where` to check whether x is equal to 1. If it is, make the value of x = 1, otherwise make it 0. Return x. Create a toy dataframe with three rows and two columns and test your function to make sure it works as expected
-"""
+# #### Q2 Define a function called clean_sm that takes one input, x, and uses `np.where` to check whether x is equal to 1. If it is, make the value of x = 1, otherwise make it 0. Return x. Create a toy dataframe with three rows and two columns and test your function to make sure it works as expected
+# """
 
 def clean_sm (x) :
   x = np.where(x==1, 1, 0)
@@ -43,15 +45,15 @@ toy_df = pd.DataFrame({
     'new_toy': [1, 50, -10]
 })
 
-toy_df.shape
-toy_df
+# toy_df.shape
+# toy_df
 
-print(clean_sm(toy_df))
+# print(clean_sm(toy_df))
 
-"""***
+# """***
 
-#### Q3 Create a new dataframe called "ss". The new dataframe should contain a target column called sm_li which should be a binary variable ( that takes the value of 1 if it is 1 and 0 otherwise (use clean_sm to create this) which indicates whether or not the individual uses LinkedIn, and the following features: income (ordered numeric from 1 to 9, above 9 considered missing), education (ordered numeric from 1 to 8, above 8 considered missing), parent (binary), married (binary), female (binary), and age (numeric, above 98 considered missing). Drop any missing values. Perform exploratory analysis to examine how the features are related to the target.
-"""
+# #### Q3 Create a new dataframe called "ss". The new dataframe should contain a target column called sm_li which should be a binary variable ( that takes the value of 1 if it is 1 and 0 otherwise (use clean_sm to create this) which indicates whether or not the individual uses LinkedIn, and the following features: income (ordered numeric from 1 to 9, above 9 considered missing), education (ordered numeric from 1 to 8, above 8 considered missing), parent (binary), married (binary), female (binary), and age (numeric, above 98 considered missing). Drop any missing values. Perform exploratory analysis to examine how the features are related to the target.
+# """
 
 ss = pd.DataFrame({
     'sm_li': [],
@@ -64,20 +66,20 @@ ss = pd.DataFrame({
 })
 
 ss['sm_li'] = clean_sm(s['web1h'])
-ss['income'] = np.where(s['income'] <= 9, s['income'], np.NaN)
-ss['education'] = np.where(s['educ2'] <= 8, s['educ2'], np.NaN)
+ss['income'] = np.where(s['income'] <= 9, s['income'], np.nan)
+ss['education'] = np.where(s['educ2'] <= 8, s['educ2'], np.nan)
 ss['parent'] = clean_sm(s['par'])
 ss['married'] = clean_sm(s['marital'])
 ss['female'] = np.where(s['gender'] == 2, 1, 0)
-ss['age'] = np.where(s['age'] <= 98, s['age'], np.NaN)
+ss['age'] = np.where(s['age'] <= 98, s['age'], np.nan)
 
 ss = ss.dropna()
 
 pd.crosstab(ss['sm_li'], columns = 'count', normalize = True)
 
-"""####At a high level, about a third of the dataset use LinkedIn.
-####Of those that use LinkedIn, many skew towards higher levels of income at 72% having $75K+. 65% have a strong education background with at least a Bachelor's degree. 69% of LinkedIn users do not have children, 54% are married, and 37% are female. Looking at age, LinkedIn users are fairly evenly distributed among the 25-64 age range.
-"""
+# """####At a high level, about a third of the dataset use LinkedIn.
+# ####Of those that use LinkedIn, many skew towards higher levels of income at 72% having $75K+. 65% have a strong education background with at least a Bachelor's degree. 69% of LinkedIn users do not have children, 54% are married, and 37% are female. Looking at age, LinkedIn users are fairly evenly distributed among the 25-64 age range.
+# """
 
 round(pd.crosstab(ss['sm_li'], ss['income'], normalize='index'),2)
 
@@ -91,7 +93,7 @@ round(pd.crosstab(ss['sm_li'], ss['female'], normalize='index'),2)
 
 age_plot_data = ss.groupby('age', as_index=False)['sm_li'].agg('sum')
 
-ggplot(age_plot_data,aes(x='age', y='sm_li')) + geom_bar(stat='identity')
+# ggplot(age_plot_data,aes(x='age', y='sm_li')) + geom_bar(stat='identity')
 
 # Categorizing age to better understand the data when looking at the crosstab
 ss['age_category'] = np.where((ss['age'] >= 18) & (ss['age'] <= 24), '18-24',
@@ -100,28 +102,28 @@ ss['age_category'] = np.where((ss['age'] >= 18) & (ss['age'] <= 24), '18-24',
                                                 np.where((ss['age'] >= 45) & (ss['age'] <= 54), '45-54',
                                                          np.where((ss['age'] >= 55) & (ss['age'] <= 64), '55-64', '65+')))))
 
-round(pd.crosstab(ss['sm_li'], ss['age_category'], normalize='index'),2)
+# round(pd.crosstab(ss['sm_li'], ss['age_category'], normalize='index'),2)
 
-"""***
+# """***
 
-#### Q4 Create a target vector (y) and feature set (X)
-"""
+# #### Q4 Create a target vector (y) and feature set (X)
+# """
 
 y = ss['sm_li']
 x = ss[['income', 'education', 'parent', 'married', 'female', 'age']]
 
-"""***
+# """***
 
-#### Q5 Split the data into training and test sets. Hold out 20% of the data for testing. Explain what each new object contains and how it is used in machine learning
+# #### Q5 Split the data into training and test sets. Hold out 20% of the data for testing. Explain what each new object contains and how it is used in machine learning
 
-####x_train holds the features used to predict the target variable when training the model.
+# ####x_train holds the features used to predict the target variable when training the model.
 
-####y_train holds the target variable that will be predicted by the features in x_train when training the model.
+# ####y_train holds the target variable that will be predicted by the features in x_train when training the model.
 
-####x_test holds the features used to test the model and evaulate performance.
+# ####x_test holds the features used to test the model and evaulate performance.
 
-####y_test holds the target variable that will be predicted when testing the model with x_test.
-"""
+# ####y_test holds the target variable that will be predicted when testing the model with x_test.
+# """
 
 x_train, x_test, y_train, y_test = train_test_split(x.values,
                                                     y,
@@ -129,71 +131,71 @@ x_train, x_test, y_train, y_test = train_test_split(x.values,
                                                     test_size=0.2,
                                                     random_state=1001)
 
-"""***
+# """***
 
-#### Q6 Instantiate a logistic regression model and set class_weight to balanced. Fit the model with the training data.
-"""
+# #### Q6 Instantiate a logistic regression model and set class_weight to balanced. Fit the model with the training data.
+# """
 
 lr = LogisticRegression(class_weight='balanced')
 
 lr.fit(x_train, y_train)
 
-"""***
+# """***
 
-#### Q7 Evaluate the model using the testing data. What is the model accuracy for the model? Use the model to make predictions and then generate a confusion matrix from the model. Interpret the confusion matrix and explain what each number means.
-"""
+# #### Q7 Evaluate the model using the testing data. What is the model accuracy for the model? Use the model to make predictions and then generate a confusion matrix from the model. Interpret the confusion matrix and explain what each number means.
+# """
 
 y_pred = lr.predict(x_test)
 
-"""####Using a confusion matrix, actual vs predicted values can be visualized. In this case, 18 is the total amount the the model predicted incorrectly as negative while 109 is the amount of correct predictions that were negative. 59 is the amount the model incorrectly predicted as positive while 66 is the amount the model got right by predicting positive."""
+# """####Using a confusion matrix, actual vs predicted values can be visualized. In this case, 18 is the total amount the the model predicted incorrectly as negative while 109 is the amount of correct predictions that were negative. 59 is the amount the model incorrectly predicted as positive while 66 is the amount the model got right by predicting positive."""
 
 pd.DataFrame(confusion_matrix(y_test, y_pred),
              columns=['Predicted Negative', 'Predicted Positive'],
              index=['Actual Negative', 'Actual Positive'])
 
-"""####Using classification report, the accuracy of the model can be found. Here, the model is 69% accurate."""
+# """####Using classification report, the accuracy of the model can be found. Here, the model is 69% accurate."""
 
 print(classification_report(y_test, y_pred))
 
-"""***
+# """***
 
-#### Q8 Create the confusion matrix as a dataframe and add informative column names and index names that indicate what each quadrant represents
-"""
+# #### Q8 Create the confusion matrix as a dataframe and add informative column names and index names that indicate what each quadrant represents
+# """
 
 pd.DataFrame(confusion_matrix(y_test, y_pred),
              columns=['Predicted Negative', 'Predicted Positive'],
              index=['Actual Negative', 'Actual Positive']).style.background_gradient(cmap='RdBu')
 
-"""***
+# """***
 
-#### Q9 Aside from accuracy, there are three other metrics used to evaluate model performance: precision, recall, and F1 score. Use the results in the confusion matrix to calculate each of these metrics by hand. Discuss each metric and give an actual example of when it might be the preferred metric of evaluation. After calculating the metrics by hand, create a classification_report using sklearn and check to ensure your metrics match those of the classification_report.
+# #### Q9 Aside from accuracy, there are three other metrics used to evaluate model performance: precision, recall, and F1 score. Use the results in the confusion matrix to calculate each of these metrics by hand. Discuss each metric and give an actual example of when it might be the preferred metric of evaluation. After calculating the metrics by hand, create a classification_report using sklearn and check to ensure your metrics match those of the classification_report.
 
-####With the values from the confusion matrix, Recall and Precision can be measured. In this case, recall is about 78.6%, the amount of positive predictions that were correct divided by total number of actual positive in the test set. On the other hand, precision was about 52.8%, the amount of positive predictions that were correct divided by the total number of positive predictions made by the model. The F1 Score is about 63.2%, a balanced measurement between Precision and Recall.
+# ####With the values from the confusion matrix, Recall and Precision can be measured. In this case, recall is about 78.6%, the amount of positive predictions that were correct divided by total number of actual positive in the test set. On the other hand, precision was about 52.8%, the amount of positive predictions that were correct divided by the total number of positive predictions made by the model. The F1 Score is about 63.2%, a balanced measurement between Precision and Recall.
 
-####Use of these metrics will depend on the situation and goals. If false negatives have a high cost, then Recall is a good measure to use. For example, in medical screenings, predicting a negative when the case is actually positive has a much higher cost than predicting a positive and the case is actually a negative.
+# ####Use of these metrics will depend on the situation and goals. If false negatives have a high cost, then Recall is a good measure to use. For example, in medical screenings, predicting a negative when the case is actually positive has a much higher cost than predicting a positive and the case is actually a negative.
 
-####On the other hand, if the cost of a false positive is high, like in the case of fraud detection (marking something as fraudulent when it is not), then Precision should be used.
+# ####On the other hand, if the cost of a false positive is high, like in the case of fraud detection (marking something as fraudulent when it is not), then Precision should be used.
 
-####Lastly, F1 score is a weighted average between recall and precision, and is typically used when both false positives and false negatives are important.
-"""
+# ####Lastly, F1 score is a weighted average between recall and precision, and is typically used when both false positives and false negatives are important.
+# """
 
 # Recall
-round(66/(66+18),3)
+# round(66/(66+18),3)
 
 # Precision
-round(66/(66+59),3)
+# round(66/(66+59),3)
 
 # F1 Score
-round(2 * ((round(66/(66+59),3))*round(66/(66+18),3))/((round(66/(66+59),3))+round(66/(66+18),3)),3)
+# round(2 * ((round(66/(66+59),3))*round(66/(66+18),3))/((round(66/(66+59),3))+round(66/(66+18),3)),3)
 
-print(classification_report(y_test, y_pred))
+# print(classification_report(y_test, y_pred))
 
-"""***
+# """***
 
-#### Q10 Use the model to make predictions. For instance, what is the probability that a high income (e.g. income=8), with a high level of education (e.g. 7), non-parent who is married female and 42 years old uses LinkedIn? How does the probability change if another person is 82 years old, but otherwise the same?
+# #### Q10 Use the model to make predictions. For instance, what is the probability that a high income (e.g. income=8), with a high level of education (e.g. 7), non-parent who is married female and 42 years old uses LinkedIn? How does the probability change if another person is 82 years old, but otherwise the same?
 
-####The model predicts that the 42 year old would be the one more likely to use LinkedIn than the 82 year old. The 42 year old has about a 75% probability to use LinkedIn, and this drops to about 48% for the 82 year old.
-"""
+# ####The model predicts that the 42 year old would be the one more likely to use LinkedIn than the 82 year old. The 42 year old has about a 75% probability to use LinkedIn, and this drops to about 48% for the 82 year old.
+# """
 
 person1 = [8, 7, 1, 1, 1, 42]
 
@@ -214,6 +216,110 @@ new_data = pd.DataFrame({
 
 new_data['prediction'] = lr.predict(new_data)
 
-new_data
+# new_data
 
 """***"""
+
+income_input = st.selectbox("Income Level", 
+             options = ['$0-$10,000',
+             '$10,000-$20,000', 
+             '$20,001-$30,000',
+             '$30,001-$40,000',
+             '$40,001-$50,000',
+             '$50,001-$75,000',
+             '$75,001-$100,000',
+             '$100,001-$150,000',
+             '$150,000+'])
+
+if income_input == '$0-$10,000':
+    income_value = 1
+elif income_input == '$10,000-$20,000':
+    income_value = 2
+elif income_input == '$20,001-$30,000':
+    income_value = 3
+elif income_input == '$30,001-$40,000':
+    income_value = 4
+elif income_input == '$40,001-$50,000':
+    income_value = 5
+elif income_input == '$50,001-$75,000':
+    income_value = 6
+elif income_input == '$75,001-$100,000':
+    income_value = 7
+elif income_input == '$100,001-$150,000':
+    income_value = 8
+elif income_input == '$150,000+':
+    income_value = 9
+else:
+    income_value = np.nan
+
+"""***"""
+
+education_input = st.selectbox('Education Level', 
+             options = ['Less than high school',
+                        'High school incomplete',
+                        'High school graduate',
+                        'Some college',
+                        'Two-year college degree',
+                        'Four-year college degree',
+                        'Some postgraduate',
+                        'Postgraduate degree'])
+
+if education_input == 'Less than high school':
+    education_value = 1
+elif education_input == 'High school incomplete':
+    education_value = 2
+elif education_input == 'High school graduate':
+    education_value = 3
+elif education_input == 'Some college':
+    education_value = 4
+elif education_input == 'Two-year college degree':
+    education_value = 5
+elif education_input == 'Four-year college degree':
+    education_value = 6
+elif education_input == 'Some postgraduate':
+    education_value = 7
+elif education_input == 'Postgraduate degree':
+    education_value = 8
+else:
+    income_value = np.nan
+
+"""***"""
+
+parent_input = st.selectbox('Parental Status', 
+             options = ['No', 'Yes'])
+
+if parent_input == 'Yes':
+    parent_value = 1
+else:
+    parent_value = 0
+
+"""***"""
+
+married_input = st.selectbox('Marriage Status', 
+             options = ['No', 'Yes'])
+
+if married_input == 'Yes':
+    married_value = 1
+else:
+    married_value = 0
+
+"""***"""
+
+gender_input = st.selectbox('Gender', 
+             options = ['Male', 'Female', 'Other'])
+
+if gender_input == 'Female':
+    gender_value = 1
+else:
+    gender_value = 0
+
+"""***"""
+
+age_value = st.slider(label="Enter your age", 
+          min_value=0,
+          max_value=100,
+          value=0)
+
+
+with st.sidebar:
+    st.write(f"This person is bracket")
